@@ -19,16 +19,6 @@
       "rating": "Incorrect Buy",
       "comment": "N",
       "rated_at": "2026-05-25T00:26:24.222692"
-    },
-    {
-      "order_id": "item_318359838460",
-      "title": "Pokemon TCG Mega Gengar Ex 284/217 Special Illustration Rare Ascended Heroes NM",
-      "amount": 1249.99,
-      "order_date": "May 25, 2026",
-      "detected_at": "2026-05-25T12:41:57.562906",
-      "rating": "",
-      "comment": "",
-      "rated_at": ""
     }
   ],
   "known_ids": [

@@ -350,8 +350,8 @@
 
     // Stats
     const total   = purchases.length;
-    const good    = purchases.filter(p => p.rating === "Correct Buy").length;
-    const bad     = purchases.filter(p => p.rating === "Incorrect Buy").length;
+    const good    = purchases.filter(p => p.rating === "Correct Buy" || p.rating === "Good Buy").length;
+    const bad     = purchases.filter(p => p.rating === "Incorrect Buy" || p.rating === "Bad Buy").length;
     const pending = purchases.filter(p => !p.rating).length;
 
     document.getElementById("stat-total").textContent   = total;
@@ -362,7 +362,7 @@
     // Weekly payout
     const weekStart = getWeekStart();
     const weekPayout = purchases
-      .filter(p => p.rating === "Correct Buy" && p.rated_at &&
+      .filter(p => (p.rating === "Correct Buy" || p.rating === "Good Buy") && p.rated_at &&
                    new Date(p.rated_at) >= weekStart)
       .reduce((sum, p) => sum + getPayout(p.amount), 0);
     document.getElementById("week-payout").textContent =
@@ -380,12 +380,17 @@
     }
 
     const rows = sorted.map(p => {
-      const isCorrect = p.rating === "Correct Buy";
-      const isIncorrect = p.rating === "Incorrect Buy";
+      // Normalize legacy rating names
+      const rating = p.rating === "Good Buy" ? "Correct Buy"
+                   : p.rating === "Bad Buy" ? "Incorrect Buy"
+                   : p.rating;
 
-      const badge = p.rating
+      const isCorrect = rating === "Correct Buy";
+      const isIncorrect = rating === "Incorrect Buy";
+
+      const badge = rating
         ? `<span class="badge ${isCorrect ? 'badge-good' : isIncorrect ? 'badge-bad' : 'badge-nathan'}">
-             ${isCorrect ? '✅' : isIncorrect ? '❌' : '👤'} ${p.rating}
+             ${isCorrect ? '✅' : isIncorrect ? '❌' : '👤'} ${rating}
            </span>`
         : `<span class="badge badge-pending">⏳ Pending</span>`;
 

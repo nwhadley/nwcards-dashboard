@@ -298,9 +298,8 @@
 </div>
 
 <script>
-  // OneDrive direct download - converts share URL to direct download
-  const ONEDRIVE_SHARE = "https://1drv.ms/u/c/5110f0ca03ceb409/IQCiwdjYVAFBRobDTvqbVhPcAe-mw03Z2W1QBFtTghZ3P6c?e=rFAnaq";
-  const DATA_PATH = ONEDRIVE_SHARE + "&download=1";
+  // Reads purchases.json directly from GitHub
+  const DATA_PATH = "https://raw.githubusercontent.com/nwhadley/nwcards-dashboard/main/purchases.json";
 
   function getWeekStart() {
     const now = new Date();

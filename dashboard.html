@@ -151,6 +151,12 @@
       border: 1px solid #7f1d1d;
     }
 
+    .badge-nathan {
+      background: #1f2937;
+      color: #9ca3af;
+      border: 1px solid #374151;
+    }
+
     .badge-pending {
       background: #1e293b;
       color: #94a3b8;
@@ -250,11 +256,11 @@
     <div class="card-value blue" id="stat-total">—</div>
   </div>
   <div class="card">
-    <div class="card-label">Good Buys</div>
+    <div class="card-label">Correct Buys</div>
     <div class="card-value green" id="stat-good">—</div>
   </div>
   <div class="card">
-    <div class="card-label">Bad Buys</div>
+    <div class="card-label">Incorrect Buys</div>
     <div class="card-value red" id="stat-bad">—</div>
   </div>
   <div class="card">
@@ -267,7 +273,7 @@
 <div class="week-bar">
   <div>
     <div class="card-label">This Week's Total Payout</div>
-    <div class="week-bar-label">Sum of 2% commission on all Good Buys this week</div>
+    <div class="week-bar-label">3% under $250 · 2.5% $250–$500 · 2% $500–$1000 · 1.5% over $1000</div>
   </div>
   <div class="week-bar-amount" id="week-payout">$0.00</div>
 </div>
@@ -281,10 +287,11 @@
     <thead>
       <tr>
         <th>Listing Description</th>
+        <th>Detected</th>
         <th>Rating</th>
         <th>Comments</th>
         <th>Purchase Amount</th>
-        <th>Payout (2%)</th>
+        <th>Payout (Tiered)</th>
       </tr>
     </thead>
     <tbody id="table-body">
@@ -300,6 +307,13 @@
 <script>
   // Reads purchases.json directly from GitHub (cache-busted)
   const DATA_PATH = `https://raw.githubusercontent.com/nwhadley/nwcards-dashboard/main/purchases.json?t=${Date.now()}`;
+
+  function getPayout(amount) {
+    if (amount < 250) return amount * 0.03;
+    if (amount < 500) return amount * 0.025;
+    if (amount < 1000) return amount * 0.02;
+    return amount * 0.015;
+  }
 
   function getWeekStart() {
     const now = new Date();
@@ -336,8 +350,8 @@
 
     // Stats
     const total   = purchases.length;
-    const good    = purchases.filter(p => p.rating === "Good Buy").length;
-    const bad     = purchases.filter(p => p.rating === "Bad Buy").length;
+    const good    = purchases.filter(p => p.rating === "Correct Buy").length;
+    const bad     = purchases.filter(p => p.rating === "Incorrect Buy").length;
     const pending = purchases.filter(p => !p.rating).length;
 
     document.getElementById("stat-total").textContent   = total;
@@ -348,9 +362,9 @@
     // Weekly payout
     const weekStart = getWeekStart();
     const weekPayout = purchases
-      .filter(p => p.rating === "Good Buy" && p.rated_at &&
+      .filter(p => p.rating === "Correct Buy" && p.rated_at &&
                    new Date(p.rated_at) >= weekStart)
-      .reduce((sum, p) => sum + (p.amount * 0.02), 0);
+      .reduce((sum, p) => sum + getPayout(p.amount), 0);
     document.getElementById("week-payout").textContent =
       "$" + weekPayout.toFixed(2);
 
@@ -366,12 +380,12 @@
     }
 
     const rows = sorted.map(p => {
-      const isGood = p.rating === "Good Buy";
-      const isBad  = p.rating === "Bad Buy";
+      const isCorrect = p.rating === "Correct Buy";
+      const isIncorrect = p.rating === "Incorrect Buy";
 
       const badge = p.rating
-        ? `<span class="badge ${isGood ? 'badge-good' : 'badge-bad'}">
-             ${isGood ? '✅' : '❌'} ${p.rating}
+        ? `<span class="badge ${isCorrect ? 'badge-good' : isIncorrect ? 'badge-bad' : 'badge-nathan'}">
+             ${isCorrect ? '✅' : isIncorrect ? '❌' : '👤'} ${p.rating}
            </span>`
         : `<span class="badge badge-pending">⏳ Pending</span>`;
 
@@ -379,17 +393,28 @@
         ? `$${Number(p.amount).toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
         : "—";
 
-      const payout = isGood && p.amount
-        ? `$${(p.amount * 0.02).toFixed(2)}`
+      const payout = isCorrect && p.amount
+        ? `$${getPayout(p.amount).toFixed(2)}`
         : `<span class="payout-na">—</span>`;
 
       const comment = p.comment
         ? `<span class="comment-cell">${escHtml(p.comment)}</span>`
         : `<span class="payout-na">No comment</span>`;
 
+      const detected = p.detected_at
+        ? (() => {
+            const d = new Date(p.detected_at);
+            return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+              + "<br><span style='color:#64748b;font-size:0.78rem'>"
+              + d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true })
+              + "</span>";
+          })()
+        : "—";
+
       return `
         <tr>
           <td class="title-cell">${escHtml(p.title || "Unknown listing")}</td>
+          <td style="white-space:nowrap;font-size:0.82rem">${detected}</td>
           <td>${badge}</td>
           <td>${comment}</td>
           <td class="amount-cell">${amount}</td>

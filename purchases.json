@@ -17,14 +17,25 @@
       "order_date": "May 25, 2026",
       "detected_at": "2026-05-25T00:26:11.134492",
       "rating": "Incorrect Buy",
-      "comment": "",
+      "comment": "N",
       "rated_at": "2026-05-25T00:26:24.222692"
+    },
+    {
+      "order_id": "item_318359823140",
+      "title": "Pokemon Mega Dragonite EX #290/217 SIR: Ascended Heroes Pack Fresh Mint",
+      "amount": 900.0,
+      "order_date": "May 25, 2026",
+      "detected_at": "2026-05-25T12:33:14.006502",
+      "rating": "",
+      "comment": "",
+      "rated_at": ""
     }
   ],
   "known_ids": [
-    "item_377208618360",
-    "item_227357224652",
     "item_366419284097",
-    "item_287351409146"
+    "item_377208618360",
+    "item_287351409146",
+    "item_227357224652",
+    "item_318359823140"
   ]
 }

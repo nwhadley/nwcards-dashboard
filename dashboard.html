@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NW Cards — Purchase Dashboard</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+      min-height: 100vh;
+      padding: 32px 24px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+
+    header h1 span {
+      color: #3b82f6;
+    }
+
+    .meta {
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+
+    /* Summary cards */
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .card {
+      background: #1e2130;
+      border: 1px solid #2d3348;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .card-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+
+    .card-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .card-value.green { color: #22c55e; }
+    .card-value.red   { color: #ef4444; }
+    .card-value.blue  { color: #3b82f6; }
+
+    /* Table */
+    .table-wrap {
+      background: #1e2130;
+      border: 1px solid #2d3348;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .table-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #2d3348;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      background: #161825;
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #64748b;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      border-top: 1px solid #2d3348;
+      transition: background 0.15s;
+    }
+
+    tbody tr:hover { background: #252840; }
+
+    tbody td {
+      padding: 14px 16px;
+      font-size: 0.875rem;
+      vertical-align: top;
+    }
+
+    .title-cell {
+      max-width: 300px;
+      line-height: 1.4;
+      color: #e2e8f0;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 99px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-good {
+      background: #14532d;
+      color: #4ade80;
+      border: 1px solid #166534;
+    }
+
+    .badge-bad {
+      background: #450a0a;
+      color: #f87171;
+      border: 1px solid #7f1d1d;
+    }
+
+    .badge-pending {
+      background: #1e293b;
+      color: #94a3b8;
+      border: 1px solid #334155;
+    }
+
+    .comment-cell {
+      color: #94a3b8;
+      font-style: italic;
+      max-width: 220px;
+      line-height: 1.4;
+    }
+
+    .amount-cell {
+      font-weight: 600;
+      color: #e2e8f0;
+      white-space: nowrap;
+    }
+
+    .payout-cell {
+      font-weight: 700;
+      color: #22c55e;
+      white-space: nowrap;
+    }
+
+    .payout-na {
+      color: #374151;
+      font-size: 0.8rem;
+    }
+
+    .empty-state {
+      padding: 60px 20px;
+      text-align: center;
+      color: #4b5563;
+    }
+
+    .empty-state p { margin-top: 8px; font-size: 0.85rem; }
+
+    .refresh-btn {
+      background: #1e3a5f;
+      border: 1px solid #2563eb;
+      color: #93c5fd;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .refresh-btn:hover { background: #1d4ed8; color: #fff; }
+
+    /* Week total bar */
+    .week-bar {
+      background: #1e2130;
+      border: 1px solid #2d3348;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .week-bar-label {
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+
+    .week-bar-amount {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #22c55e;
+    }
+
+    @media (max-width: 640px) {
+      thead th:nth-child(4),
+      tbody td:nth-child(4) { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>NW<span>Cards</span> Purchase Log</h1>
+  <div style="display:flex;gap:10px;align-items:center;">
+    <span class="meta" id="last-updated">Loading…</span>
+    <button class="refresh-btn" onclick="loadData()">↻ Refresh</button>
+  </div>
+</header>
+
+<!-- Summary cards -->
+<div class="summary">
+  <div class="card">
+    <div class="card-label">Total Purchases</div>
+    <div class="card-value blue" id="stat-total">—</div>
+  </div>
+  <div class="card">
+    <div class="card-label">Good Buys</div>
+    <div class="card-value green" id="stat-good">—</div>
+  </div>
+  <div class="card">
+    <div class="card-label">Bad Buys</div>
+    <div class="card-value red" id="stat-bad">—</div>
+  </div>
+  <div class="card">
+    <div class="card-label">Pending Review</div>
+    <div class="card-value" id="stat-pending">—</div>
+  </div>
+</div>
+
+<!-- Weekly payout bar -->
+<div class="week-bar">
+  <div>
+    <div class="card-label">This Week's Total Payout</div>
+    <div class="week-bar-label">Sum of 2% commission on all Good Buys this week</div>
+  </div>
+  <div class="week-bar-amount" id="week-payout">$0.00</div>
+</div>
+
+<!-- Table -->
+<div class="table-wrap">
+  <div class="table-header">
+    📋 Purchase History
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Listing Description</th>
+        <th>Rating</th>
+        <th>Comments</th>
+        <th>Purchase Amount</th>
+        <th>Payout (2%)</th>
+      </tr>
+    </thead>
+    <tbody id="table-body">
+      <tr>
+        <td colspan="5">
+          <div class="empty-state">⏳ Loading purchases…</div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+  // OneDrive direct download - converts share URL to direct download
+  const ONEDRIVE_SHARE = "https://1drv.ms/u/c/5110f0ca03ceb409/IQCiwdjYVAFBRobDTvqbVhPcAe-mw03Z2W1QBFtTghZ3P6c?e=rFAnaq";
+  const DATA_PATH = ONEDRIVE_SHARE + "&download=1";
+
+  function getWeekStart() {
+    const now = new Date();
+    const day = now.getDay(); // 0=Sun
+    const diff = now.getDate() - day + (day === 0 ? -6 : 1); // Monday
+    const monday = new Date(now.setDate(diff));
+    monday.setHours(0, 0, 0, 0);
+    return monday;
+  }
+
+  async function loadData() {
+    document.getElementById("last-updated").textContent = "Refreshing…";
+    try {
+      const res = await fetch(DATA_PATH + "?t=" + Date.now());
+      const data = await res.json();
+      render(data.purchases || []);
+    } catch (e) {
+      document.getElementById("last-updated").textContent = "Error loading data";
+      document.getElementById("table-body").innerHTML = `
+        <tr><td colspan="5">
+          <div class="empty-state">
+            ⚠️ Could not load data from OneDrive
+            <p>Make sure the OneDrive share link is active and you're connected to the internet.</p>
+          </div>
+        </td></tr>`;
+    }
+  }
+
+  function render(purchases) {
+    const now = new Date();
+    document.getElementById("last-updated").textContent =
+      "Updated " + now.toLocaleTimeString();
+
+    // Stats
+    const total   = purchases.length;
+    const good    = purchases.filter(p => p.rating === "Good Buy").length;
+    const bad     = purchases.filter(p => p.rating === "Bad Buy").length;
+    const pending = purchases.filter(p => !p.rating).length;
+
+    document.getElementById("stat-total").textContent   = total;
+    document.getElementById("stat-good").textContent    = good;
+    document.getElementById("stat-bad").textContent     = bad;
+    document.getElementById("stat-pending").textContent = pending;
+
+    // Weekly payout
+    const weekStart = getWeekStart();
+    const weekPayout = purchases
+      .filter(p => p.rating === "Good Buy" && p.rated_at &&
+                   new Date(p.rated_at) >= weekStart)
+      .reduce((sum, p) => sum + (p.amount * 0.02), 0);
+    document.getElementById("week-payout").textContent =
+      "$" + weekPayout.toFixed(2);
+
+    // Table rows — newest first
+    const sorted = [...purchases].reverse();
+
+    if (sorted.length === 0) {
+      document.getElementById("table-body").innerHTML = `
+        <tr><td colspan="5">
+          <div class="empty-state">🛒 No purchases yet<p>Awaiting Payment orders will appear here.</p></div>
+        </td></tr>`;
+      return;
+    }
+
+    const rows = sorted.map(p => {
+      const isGood = p.rating === "Good Buy";
+      const isBad  = p.rating === "Bad Buy";
+
+      const badge = p.rating
+        ? `<span class="badge ${isGood ? 'badge-good' : 'badge-bad'}">
+             ${isGood ? '✅' : '❌'} ${p.rating}
+           </span>`
+        : `<span class="badge badge-pending">⏳ Pending</span>`;
+
+      const amount = p.amount
+        ? `$${Number(p.amount).toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
+        : "—";
+
+      const payout = isGood && p.amount
+        ? `$${(p.amount * 0.02).toFixed(2)}`
+        : `<span class="payout-na">—</span>`;
+
+      const comment = p.comment
+        ? `<span class="comment-cell">${escHtml(p.comment)}</span>`
+        : `<span class="payout-na">No comment</span>`;
+
+      return `
+        <tr>
+          <td class="title-cell">${escHtml(p.title || "Unknown listing")}</td>
+          <td>${badge}</td>
+          <td>${comment}</td>
+          <td class="amount-cell">${amount}</td>
+          <td class="payout-cell">${payout}</td>
+        </tr>`;
+    }).join("");
+
+    document.getElementById("table-body").innerHTML = rows;
+  }
+
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  // Auto-refresh every 30 seconds
+  loadData();
+  setInterval(loadData, 30000);
+</script>
+</body>
+</html>

@@ -327,7 +327,7 @@
   async function loadData() {
     document.getElementById("last-updated").textContent = "Refreshing…";
     try {
-      const url = `https://raw.githubusercontent.com/nwhadley/nwcards-dashboard/main/purchases.json?t=${Date.now()}`;
+      const url = `https://cdn.jsdelivr.net/gh/nwhadley/nwcards-dashboard@main/purchases.json?t=${Date.now()}`;
       const res = await fetch(url, { cache: "no-store" });
       const data = await res.json();
       render(data.purchases || []);

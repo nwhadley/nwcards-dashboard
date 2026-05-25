@@ -298,8 +298,8 @@
 </div>
 
 <script>
-  // Reads purchases.json directly from GitHub
-  const DATA_PATH = "https://raw.githubusercontent.com/nwhadley/nwcards-dashboard/main/purchases.json";
+  // Reads purchases.json directly from GitHub (cache-busted)
+  const DATA_PATH = `https://raw.githubusercontent.com/nwhadley/nwcards-dashboard/main/purchases.json?t=${Date.now()}`;
 
   function getWeekStart() {
     const now = new Date();
@@ -313,7 +313,8 @@
   async function loadData() {
     document.getElementById("last-updated").textContent = "Refreshing…";
     try {
-      const res = await fetch(DATA_PATH + "?t=" + Date.now());
+      const url = `https://raw.githubusercontent.com/nwhadley/nwcards-dashboard/main/purchases.json?t=${Date.now()}`;
+      const res = await fetch(url, { cache: "no-store" });
       const data = await res.json();
       render(data.purchases || []);
     } catch (e) {

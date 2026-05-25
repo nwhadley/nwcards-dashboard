@@ -9,11 +9,22 @@
       "rating": "Correct Buy",
       "comment": "Y",
       "rated_at": "2026-05-25T00:20:34.207642"
+    },
+    {
+      "order_id": "item_227357224652",
+      "title": "2025 Panini Prizm WNBA White Seismic Wave Prizm #27 Diamond Miller - Wings - 2d",
+      "amount": 1.25,
+      "order_date": "May 25, 2026",
+      "detected_at": "2026-05-25T00:26:11.134492",
+      "rating": "",
+      "comment": "",
+      "rated_at": ""
     }
   ],
   "known_ids": [
-    "item_287351409146",
+    "item_377208618360",
+    "item_227357224652",
     "item_366419284097",
-    "item_377208618360"
+    "item_287351409146"
   ]
 }

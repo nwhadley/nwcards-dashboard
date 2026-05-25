@@ -1,16 +1,6 @@
 {
   "purchases": [
     {
-      "order_id": "item_366419284097",
-      "title": "Mega Gengar EX 350HP ASC Set 284/217 Foil Stage 2 Pokémon TCG Card",
-      "amount": 1450.0,
-      "order_date": "May 20, 2026",
-      "detected_at": "2026-05-24T17:04:16.663063",
-      "rating": "Good Buy",
-      "comment": "D",
-      "rated_at": "2026-05-24T23:54:39.304637"
-    },
-    {
       "order_id": "item_287351409146",
       "title": "2024-25 Panini Prizm Monopoly Victor Wembanyama #73 San Antonio Spurs",
       "amount": 1.99,
@@ -32,6 +22,8 @@
     }
   ],
   "known_ids": [
-    "item_377208618360"
+    "item_366419284097",
+    "item_377208618360",
+    "item_287351409146"
   ]
 }

@@ -16,9 +16,9 @@
       "amount": 1.25,
       "order_date": "May 25, 2026",
       "detected_at": "2026-05-25T00:26:11.134492",
-      "rating": "",
+      "rating": "Incorrect Buy",
       "comment": "",
-      "rated_at": ""
+      "rated_at": "2026-05-25T00:26:24.222692"
     }
   ],
   "known_ids": [
